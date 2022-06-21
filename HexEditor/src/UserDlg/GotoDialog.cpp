@@ -1,5 +1,6 @@
 //this file is part of Function List Plugin for Notepad++
 //Copyright (C)2006 Jens Lorenz <jens.plugin.npp@gmx.de>
+//Copyright (C)2015 MacKenzie Cumings <mackenzie.cumings@gmail.com>
 //
 //This program is free software; you can redistribute it and/or
 //modify it under the terms of the GNU General Public License
@@ -23,9 +24,9 @@
 
 void GotoDlg::doDialog(HWND hHexEdit)
 {
-	if (!isCreated())
+    if (!isCreated())
 	{
-		create(IDD_GOTO_DLG);
+        create(IDD_GOTO_DLG);
 		::SendMessage(_hParent, NPPM_MODELESSDIALOG, MODELESSDIALOGADD, (LPARAM)_hSelf);
 		goToCenter();
 	}
@@ -38,114 +39,114 @@ void GotoDlg::doDialog(HWND hHexEdit)
 }
 
 
-INT_PTR CALLBACK GotoDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM)
+BOOL CALLBACK GotoDlg::run_dlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
-	switch (Message)
+	switch (Message) 
 	{
-	case WM_INITDIALOG:
-	{
-		/* initialize hex view */
-		_isHex = ::GetPrivateProfileInt(dlgEditor, gotoProp, 0, _iniFilePath);
-
-		_hLineEdit = ::GetDlgItem(_hSelf, IDC_EDIT_GOTO);
-
-		/* initial subclassing */
-		::SetWindowLongPtr(_hLineEdit, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
-		_hDefaultEditProc = reinterpret_cast<WNDPROC>(::SetWindowLongPtr(_hLineEdit, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(wndEditProc)));
-
-		::SendDlgItemMessage(_hSelf, IDC_CHECK_LINE, BM_SETCHECK, (_isHex == TRUE) ? BST_UNCHECKED : BST_CHECKED, 0);
-		::SendDlgItemMessage(_hSelf, IDC_RADIO_ADDRESS, BM_SETCHECK, BST_CHECKED, 0);
-
-		/* change language */
-		NLChangeDialog(_hInst, _nppData._nppHandle, _hSelf, _T("Goto"));
-
-		break;
-	}
-	case WM_ACTIVATE:
-	{
-		UpdateDialog();
-		break;
-	}
-	case WM_COMMAND:
-	{
-		switch (LOWORD(wParam))
+		case WM_INITDIALOG:
 		{
-		case IDCANCEL:
-			display(false);
-			break;
-		case IDOK:
-		{
-			CHAR	text[16];
-			UINT	iPos = 0;
-			UINT	iMax = 0;
+			/* initialize hex view */
+			_isHex   = ::GetPrivateProfileInt(dlgEditor, gotoProp, 0, _iniFilePath);
 
-			if (_isHex == TRUE)
-			{
-				if (_isOff == TRUE) {
-					::SendMessage(_hParentHandle, HEXM_GETPOS, 0, (LPARAM)&iPos);
-				}
+			_hLineEdit = ::GetDlgItem(_hSelf, IDC_EDIT_GOTO);
 
-				::GetWindowTextA(_hLineEdit, text, 16);
-				iPos += ASCIIConvert(text);
+			/* intial subclassing */
+			::SetWindowLongPtr(_hLineEdit, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+			_hDefaultEditProc = reinterpret_cast<WNDPROC>(::SetWindowLongPtr(_hLineEdit, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(wndEditProc)));
 
-				::SendMessage(_hParentHandle, HEXM_GETLENGTH, 0, (LPARAM)&iMax);
-				iMax--;
+			::SendDlgItemMessage(_hSelf, IDC_CHECK_LINE, BM_SETCHECK, (_isHex == TRUE)?BST_UNCHECKED:BST_CHECKED, 0);
+			::SendDlgItemMessage(_hSelf, IDC_RADIO_ADDRESS, BM_SETCHECK, BST_CHECKED, 0);
 
-				if (iPos > iMax) {
-					iPos = iMax;
-				}
-				::SendMessage(_hParentHandle, HEXM_SETSEL, iPos, (LPARAM)iPos);
-			}
-			else
-			{
-				if (_isOff == TRUE) {
-					::SendMessage(_hParentHandle, HEXM_GETCURLINE, 0, (LPARAM)&iPos);
-					iPos += LINE_OFFSET;
-				}
+			/* change language */
+			NLChangeDialog(_hInst, _nppData._nppHandle, _hSelf, _T("Goto"));
 
-				::GetWindowTextA(_hLineEdit, text, 16);
-				iPos += atoi(text) - LINE_OFFSET;
-
-				::SendMessage(_hParentHandle, HEXM_GETLINECNT, 0, (LPARAM)&iMax);
-
-				if (iPos > iMax) {
-					iPos = iMax;
-				}
-				::SendMessage(_hParentHandle, HEXM_SETCURLINE, 0, (LPARAM)iPos);
-			}
-			display(false);
 			break;
 		}
-		case IDC_CHECK_LINE:
+		case WM_ACTIVATE :
+        {
+			UpdateDialog();
+            break;
+        }
+		case WM_COMMAND : 
 		{
-			if (HIWORD(wParam) == BN_CLICKED)
+			switch (LOWORD(wParam))
 			{
-				calcAddress();
+				case IDCANCEL:
+					display(false);
+					break;
+				case IDOK:
+				{
+					CHAR	text[16];
+					UINT	iPos = 0;
+					UINT	iMax = 0;
+
+					if (_isHex == TRUE)
+					{
+						if (_isOff == TRUE) {
+							::SendMessage(_hParentHandle, HEXM_GETPOS, 0, (LPARAM)&iPos);
+						}
+
+						::GetWindowTextA(_hLineEdit, text, 16);
+						iPos += ASCIIConvert(text);
+
+						::SendMessage(_hParentHandle, HEXM_GETLENGTH, 0, (LPARAM)&iMax);
+						iMax--;
+
+						if (iPos > iMax) {
+							iPos = iMax;
+						}
+						::SendMessage(_hParentHandle, HEXM_SETSEL, iPos, (LPARAM)iPos);
+					}
+					else
+					{
+						if (_isOff == TRUE) {
+							::SendMessage(_hParentHandle, HEXM_GETCURLINE, 0, (LPARAM)&iPos);
+							iPos += LINE_OFFSET;
+						}
+
+						::GetWindowTextA(_hLineEdit, text, 16);
+						iPos += atoi(text) - LINE_OFFSET;
+
+						::SendMessage(_hParentHandle, HEXM_GETLINECNT, 0, (LPARAM)&iMax);
+
+						if (iPos > iMax) {
+							iPos = iMax;
+						}
+						::SendMessage(_hParentHandle, HEXM_SETCURLINE, 0, (LPARAM)iPos);
+					}
+					display(false);
+					break;
+				}
+				case IDC_CHECK_LINE:
+				{
+					if (HIWORD(wParam) == BN_CLICKED)
+					{
+						calcAddress();
+					}
+					break;
+				}
+				case IDC_RADIO_ADDRESS:
+				case IDC_RADIO_OFFSET:
+				{
+					calcAddress();
+					break;
+				}
+				default:
+					break;
 			}
 			break;
 		}
-		case IDC_RADIO_ADDRESS:
-		case IDC_RADIO_OFFSET:
+		case WM_DESTROY :
 		{
-			calcAddress();
+			/* deregister this dialog */
+			::SendMessage(_hParent, NPPM_MODELESSDIALOG, MODELESSDIALOGREMOVE, (LPARAM)_hSelf);
+
+			/* save view mode setting */
+			::WritePrivateProfileString(dlgEditor, gotoProp, (_isHex == TRUE)?_T("1"):_T("0"), _iniFilePath);
 			break;
 		}
 		default:
 			break;
-		}
-		break;
-	}
-	case WM_DESTROY:
-	{
-		/* deregister this dialog */
-		::SendMessage(_hParent, NPPM_MODELESSDIALOG, MODELESSDIALOGREMOVE, (LPARAM)_hSelf);
-
-		/* save view mode setting */
-		::WritePrivateProfileString(dlgEditor, gotoProp, (_isHex == TRUE) ? _T("1") : _T("0"), _iniFilePath);
-		break;
-	}
-	default:
-		break;
 	}
 	return FALSE;
 }
@@ -153,26 +154,26 @@ INT_PTR CALLBACK GotoDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM)
 
 LRESULT GotoDlg::runProcEdit(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
-	switch (Message)
+	switch (Message) 
 	{
-	case WM_CHAR:
-	{
-		if ((((wParam < 0x30) || (wParam > 0x66)) ||
-			((wParam > 0x39) && (wParam < 0x41)) ||
-			((wParam > 0x46) && (wParam < 0x61))) &&
-			(wParam != 0x08) && (_isHex == TRUE))
+		case WM_CHAR:
 		{
-			return TRUE;
+			if ((((wParam < 0x30) || (wParam > 0x66)) ||
+				((wParam > 0x39) && (wParam < 0x41)) || 
+				((wParam > 0x46) && (wParam < 0x61))) &&
+				 (wParam != 0x08) && (_isHex == TRUE))
+			{
+				return TRUE;
+			}
+			else if (((wParam < 0x30) || (wParam > 0x39)) && 
+					  (wParam != 0x08) && (_isHex == FALSE))
+			{
+				return TRUE;
+			}
+			break;
 		}
-		else if (((wParam < 0x30) || (wParam > 0x39)) &&
-			(wParam != 0x08) && (_isHex == FALSE))
-		{
-			return TRUE;
-		}
-		break;
-	}
-	default:
-		break;
+		default:
+			break;
 	}
 
 	return ::CallWindowProc(_hDefaultEditProc, hwnd, Message, wParam, lParam);
@@ -181,14 +182,14 @@ LRESULT GotoDlg::runProcEdit(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
 
 void GotoDlg::calcAddress(void)
 {
-	UINT		newPos = 0;
+	UINT		newPos		= 0;
 	tHexProp	prop;
 	CHAR		text[17];
 	CHAR		temp[17];
 
 	/* get new states */
-	_isHex = (::SendDlgItemMessage(_hSelf, IDC_CHECK_LINE, BM_GETCHECK, 0, 0) == BST_CHECKED) ? FALSE : TRUE;
-	_isOff = (::SendDlgItemMessage(_hSelf, IDC_RADIO_OFFSET, BM_GETCHECK, 0, 0) == BST_CHECKED) ? TRUE : FALSE;
+	_isHex = (::SendDlgItemMessage(_hSelf, IDC_CHECK_LINE, BM_GETCHECK, 0, 0) == BST_CHECKED)? FALSE:TRUE;
+	_isOff = (::SendDlgItemMessage(_hSelf, IDC_RADIO_OFFSET, BM_GETCHECK, 0, 0) == BST_CHECKED)? TRUE:FALSE;
 
 	/* update also min and max */
 	UpdateDialog();
@@ -245,8 +246,8 @@ void GotoDlg::UpdateDialog(void)
 
 	if (_isHex == TRUE)
 	{
-		UINT		curPos = 0;
-		UINT		maxPos = 0;
+		UINT		curPos		= 0;
+		UINT		maxPos		= 0;
 		::SendMessage(_hParentHandle, HEXM_GETPOS, 0, (LPARAM)&curPos);
 		::SendMessage(_hParentHandle, HEXM_GETLENGTH, 0, (LPARAM)&maxPos);
 		maxPos--;
@@ -258,16 +259,15 @@ void GotoDlg::UpdateDialog(void)
 		/* set max possible position */
 		if (_isOff == TRUE) {
 			sprintf(text, "%08X", maxPos - curPos);
-		}
-		else {
+		} else {
 			sprintf(text, "%08X", maxPos);
 		}
 		::SetDlgItemTextA(_hSelf, IDC_LASTLINE, text);
 	}
 	else
 	{
-		UINT		curLine = 0;
-		UINT		maxLine = 0;
+		UINT		curLine		= 0;
+		UINT		maxLine		= 0;
 		::SendMessage(_hParentHandle, HEXM_GETCURLINE, 0, (LPARAM)&curLine);
 		::SendMessage(_hParentHandle, HEXM_GETLINECNT, 0, (LPARAM)&maxLine);
 
@@ -277,8 +277,7 @@ void GotoDlg::UpdateDialog(void)
 		/* set max possible position */
 		if (_isOff == TRUE) {
 			::SetWindowTextA(::GetDlgItem(_hSelf, IDC_LASTLINE), _itoa(maxLine - curLine, text, 10));
-		}
-		else {
+		} else {
 			::SetWindowTextA(::GetDlgItem(_hSelf, IDC_LASTLINE), _itoa(maxLine + LINE_OFFSET, text, 10));
 		}
 	}

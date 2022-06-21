@@ -1,5 +1,6 @@
 //this file is part of Hex Edit Plugin for Notepad++
 //Copyright (C)2006 Jens Lorenz <jens.plugin.npp@gmx.de>
+//Copyright (C)2015 MacKenzie Cumings <mackenzie.cumings@gmail.com>
 //
 //This program is free software; you can redistribute it and/or
 //modify it under the terms of the GNU General Public License
@@ -27,38 +28,40 @@
 #include <TCHAR.h>
 #include <vector>
 
+using namespace std;
 
-const TCHAR TITLETIP_CLASSNAME[] = _T("MyToolTip");
 
-const TCHAR dlgEditor[] = _T("HEX-Editor");
-const TCHAR addWidth[] = _T("Address Width");
-const TCHAR columns[] = _T("Columns");
-const TCHAR bits[] = _T("Bits");
-const TCHAR bin[] = _T("Binary");
-const TCHAR little[] = _T("Little");
-const TCHAR fontname[] = _T("Font Name");
-const TCHAR fontsize[] = _T("Font Size");
-const TCHAR bold[] = _T("Bold");
-const TCHAR italic[] = _T("Italic");
-const TCHAR underline[] = _T("Underline");
-const TCHAR capital[] = _T("Capitel");
-const TCHAR gotoProp[] = _T("GotoIsHex");
-const TCHAR extensions[] = _T("Extensions");
-const TCHAR rgbRegTxt[] = _T("RGB Regular Text");
-const TCHAR rgbRegBk[] = _T("RGB Regular Background");
-const TCHAR rgbSelTxt[] = _T("RGB Selection Text");
-const TCHAR rgbSelBk[] = _T("RGB Selection Background");
-const TCHAR rgbDiffTxt[] = _T("RGB Difference Text");
-const TCHAR rgbDiffBk[] = _T("RGB Difference Background");
-const TCHAR rgbBkMkTxt[] = _T("RGB Bookmark Text");
-const TCHAR rgbBkMkBk[] = _T("RGB Bookmark Background");
-const TCHAR rgbCurLine[] = _T("RGB Current Line");
-const TCHAR percent[] = _T("Autostart Percent");
-const TCHAR focusRect[] = _T("Focus Rect");
+#define TITLETIP_CLASSNAME _T("MyToolTip")
 
-const TCHAR HEXEDIT_INI[] = _T("\\HexEditor.ini");
-const TCHAR COMPARE_PATH[] = _T("\\Compare");
-const TCHAR HEX_PLUGIN_PATH[] = _T("\\HexEditor");
+
+const TCHAR dlgEditor[]		= _T("HEX-Editor");
+const TCHAR addWidth[]		= _T("Address Width");
+const TCHAR columns[]		= _T("Columns");
+const TCHAR bits[]			= _T("Bits");
+const TCHAR bin[]			= _T("Binary");
+const TCHAR little[]		= _T("Little");
+const TCHAR fontname[]		= _T("Font Name");
+const TCHAR fontsize[]		= _T("Font Size");
+const TCHAR bold[]			= _T("Bold");
+const TCHAR italic[]		= _T("Italic");
+const TCHAR underline[]		= _T("Underline");
+const TCHAR capital[]		= _T("Capitel");
+const TCHAR gotoProp[]		= _T("GotoIsHex");
+const TCHAR extensions[]	= _T("Extensions");
+const TCHAR rgbRegTxt[]		= _T("RGB Regular Text");
+const TCHAR rgbRegBk[]		= _T("RGB Regular Background");
+const TCHAR rgbSelTxt[]		= _T("RGB Selection Text");
+const TCHAR rgbSelBk[]		= _T("RGB Selection Background");
+const TCHAR rgbDiffTxt[]	= _T("RGB Difference Text");
+const TCHAR rgbDiffBk[]		= _T("RGB Difference Background");
+const TCHAR rgbBkMkTxt[]	= _T("RGB Bookmark Text");
+const TCHAR rgbBkMkBk[]		= _T("RGB Bookmark Background");
+const TCHAR rgbCurLine[]	= _T("RGB Current Line");
+const TCHAR percent[]		= _T("Autostart Percent");
+const TCHAR focusRect[]		= _T("Focus Rect");
+
+const TCHAR HEXEDIT_INI[]	= _T("\\HexEditor.ini");
+const TCHAR COMPARE_PATH[]	= _T("\\Compare");
 
 #define AUTOSTART_MAX	(1024000)
 #define FIND_BLOCK		(1024000)
@@ -67,20 +70,27 @@ const TCHAR HEX_PLUGIN_PATH[] = _T("\\HexEditor");
 #define COMP_BLOCK		(1024000)
 
 
-constexpr auto HEX_BYTE = 1;
-constexpr auto HEX_WORD = 2;
-constexpr auto HEX_DWORD = 4;
-constexpr auto HEX_LONG = 8;
+#define HEX_BYTE		1
+#define HEX_WORD		2
+#define HEX_DWORD		4
+#define HEX_LONG		8
 
-constexpr auto MAX_PATH_UNICODE = 780;
+#define SHOW_HEX 0
+#define SHOW_BINARY 1
+#define SHOW_MNEMONIC_DIGITS 2
+#define SHOW_MNEMONIC_LIGATURES 3
+#define SHOW_SLANTED_DIGITS 4
+#define SHOW_SLANTED_LIGATURES 5
 
-typedef enum class eEdit
+#define MAX_PATH_UNICODE 780
+
+typedef enum eEdit
 {
 	HEX_EDIT_HEX,
 	HEX_EDIT_ASCII
 } eEdit;
 
-typedef enum class eSel
+typedef enum eSel
 {
 	HEX_SEL_NORM,
 	HEX_SEL_VERTICAL,
@@ -88,14 +98,14 @@ typedef enum class eSel
 	HEX_SEL_BLOCK
 } eSel;
 
-typedef enum class eLineVis
+typedef enum eLineVis
 {
 	HEX_LINE_FIRST,
 	HEX_LINE_MIDDLE,
 	HEX_LINE_LAST
 } eLineVis;
 
-typedef enum class eColorType
+typedef enum eColorType
 {
 	HEX_COLOR_REG_TXT,
 	HEX_COLOR_REG_BK,
@@ -108,14 +118,14 @@ typedef enum class eColorType
 	HEX_COLOR_CUR_LINE
 } eColorType;
 
-typedef enum class eSelType
+typedef enum eSelType
 {
 	HEX_COLOR_REG,
 	HEX_COLOR_SEL,
 	HEX_COLOR_DIFF
 } eSelType;
 
-typedef enum class eSelItem
+typedef enum eSelItem
 {
 	HEX_ITEM_FIRST,
 	HEX_ITEM_MIDDLE,
@@ -124,7 +134,7 @@ typedef enum class eSelItem
 } eSelItem;
 
 
-constexpr auto COMBO_STR_MAX = 1024;
+#define		COMBO_STR_MAX	1024
 
 typedef struct tComboInfo
 {
@@ -134,11 +144,11 @@ typedef struct tComboInfo
 
 typedef struct tBkMk
 {
-	LONG				lAddress;				// bookmark address
-	UINT				iItem;					// row of bookmark
+	LONG_PTR			lAddress;				// bookmark address
+	LONG_PTR			iItem;					// row of bookmark
 } tBkMk;
 
-typedef enum class eNppCoding
+typedef enum eNppCoding
 {
 	HEX_CODE_NPP_ASCI = 0,
 	HEX_CODE_NPP_UTF8,
@@ -149,7 +159,7 @@ typedef enum class eNppCoding
 
 typedef struct tCmpResult
 {
-	struct tCmpResult*  pCmpRef;                // compare reference to other view
+    struct tCmpResult*  pCmpRef;                // compare reference to other view
 	TCHAR				szFileName[MAX_PATH];	// file name to compare data
 	HANDLE				hFile;					// file handle to compare results
 	INT					offCmpCache;			// display cache offset
@@ -158,20 +168,20 @@ typedef struct tCmpResult
 } tCmpResult;
 
 typedef struct tHexProp
-{
+{	
 	TCHAR				szFileName[MAX_PATH];	// identifier of struct
 	eNppCoding			codePage;				// in Npp selected code page
 	BOOL				isModified;				// stores the modification state
 	BOOL				isVisible;				// is current file visible
 	INT					fontZoom;				// view zoom factor
 	UINT				addWidth;				// char width of address field
-	UINT				columns;				// number of columns
-	UINT				bits;					// number of bits used
-	BOOL				isBin;					// shows in binary
+	SHORT				columns;				// number of columns
+	SHORT				bits;					// number of bits used
+	INT 				isBin;					// decoding
 	BOOL				isLittle;				// shows in little endian
 	eEdit				editType;				// edit in hex or in ascii
 	UINT				firstVisRow;			// last selected scroll position
-	std::vector<tBkMk>		vBookmarks;				// bookmarks of the view
+	vector<tBkMk>		vBookmarks;				// bookmarks of the view
 
 	BOOL				isSel;					// is text selected...
 	eSel				selection;				// selection type
@@ -183,6 +193,32 @@ typedef struct tHexProp
 	UINT				anchorPos;				// start position edit position
 
 	tCmpResult*			pCmpResult;				// compare results
+	tHexProp()
+		: szFileName()
+		, codePage()
+		, isModified()
+		, isVisible()
+		, fontZoom()
+		, addWidth()
+		, columns()
+		, bits()
+		, isBin()
+		, isLittle()
+		, editType()
+		, firstVisRow()
+		, vBookmarks()
+		, isSel()
+		, selection()
+		, cursorItem()
+		, cursorSubItem()
+		, cursorPos()
+		, anchorItem()
+		, anchorSubItem()
+		, anchorPos()
+		, pCmpResult()
+	{
+
+	}
 } tHexProp;
 
 typedef struct tColor
@@ -191,7 +227,7 @@ typedef struct tColor
 	COLORREF			rgbRegBk;				// regular background color
 	COLORREF			rgbSelTxt;				// selected text color
 	COLORREF			rgbSelBk;				// selected background color
-	COLORREF			rgbDiffTxt;				// difference text color
+	COLORREF			rgbDiffTxt;				// differnece text color
 	COLORREF			rgbDiffBk;				// difference background color
 	COLORREF			rgbBkMkTxt;				// bookmark text color
 	COLORREF			rgbBkMkBk;				// bookmark background color
@@ -216,7 +252,7 @@ typedef struct tFont
 } tFont;
 
 typedef struct tProp
-{
+{	
 	tHexProp			hexProp;				// default hex property
 	tAutoStart			autoProp;				// autostart settings
 	tColor				colorProp;				// color settings
@@ -233,39 +269,39 @@ typedef struct tClipboard
 	UINT		items;
 } tClipboard;
 
-typedef enum class eError
+typedef enum eError
 {
-	E_OK = 0,
-	E_START = -1,
-	E_STRIDE = -2,
-	E_MEMORY = -3
+	E_OK		= 0,
+	E_START		= -1,
+	E_STRIDE	= -2,
+	E_MEMORY	= -3
 } eError;
 
-typedef enum class UniMode {
-	uni8Bit,
+typedef enum UniMode {
+	uni8Bit, 
 	uniUTF8,
 	uni16BE,
 	uni16LE,
 	uniCookie,
 	uniEnd
-} UniMode;
+} UniMode ;
 
 typedef struct tMenu {
 	UINT			uID;
 	UINT			uFlags;
 	TCHAR			szName[128];
-	std::vector<tMenu>	vSubMenu;
+	vector<tMenu>	vSubMenu;
 } tMenu;
 
 typedef struct tShortCut {
-	BOOL            isEnable;
-	UINT            uID;
-	ShortcutKey     scKey;
+    BOOL            isEnable;
+    UINT            uID;
+    ShortcutKey     scKey;
 } tShortCut;
 
 #define G_FONTSIZE_MAX		10
 #define FONTSIZE_DEFAULT	6		// 16
-const UINT g_iFontSize[G_FONTSIZE_MAX] = { 8, 9, 10, 11, 12, 14, 16, 18, 20, 22 };
+const UINT g_iFontSize[G_FONTSIZE_MAX] = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22};
 
 #define LITTLE_REPLACE_ERROR 																			\
   if (NLMessageBox(_hInst, _hParent, _T("MsgBox ReplError"), MB_ICONERROR | MB_OK) == FALSE)			\
@@ -296,6 +332,7 @@ HWND getCurrentHScintilla(void);
 void loadSettings(void);
 void saveSettings(void);
 void setHexMask(void);
+void initMenu(void);
 
 void checkMenu(BOOL state);
 tHexProp getProp(void);
@@ -321,6 +358,7 @@ LRESULT CALLBACK SubWndProcNotepad(HWND hWnd, UINT message, WPARAM wParam, LPARA
 void setMenu(void);
 void ActivateWindow(void);
 void SystemUpdate(void);
+void GetSecondFileName(void);
 void DialogUpdate(void);
 void DoCompare(void);
 

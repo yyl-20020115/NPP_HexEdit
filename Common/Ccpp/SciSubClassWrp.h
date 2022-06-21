@@ -39,8 +39,8 @@ public:
 	{
 		hWnd = hSci;
 		SubclassScintillaWndProc( NewWndProc );
-		SciFunc = (SciFnDirect)::SendMessage(hSci, SCI_GETDIRECTFUNCTION, 0, 0);
-		SciPtr = (sptr_t)::SendMessage( hSci, SCI_GETDIRECTPOINTER, 0, 0);
+		SciFunc = (int(*)(void*,int,int,int))::SendMessage( hSci, SCI_GETDIRECTFUNCTION, 0, 0);
+		SciPtr = (void*)::SendMessage( hSci, SCI_GETDIRECTPOINTER, 0, 0);
 	}
 
 	void CleanUp()
@@ -49,11 +49,11 @@ public:
 		{
 			if ( ::IsWindowUnicode( hWnd ) )
 			{
-				SetWindowLongPtrW( hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(OrigSciWndProc) );
+				SetWindowLongPtrW( hWnd, GWLP_WNDPROC, (LONG_PTR) OrigSciWndProc );
 			}
 			else
 			{
-				SetWindowLongPtrA( hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(OrigSciWndProc) );
+				SetWindowLongPtrA( hWnd, GWLP_WNDPROC, (LONG_PTR) OrigSciWndProc );
 			}
 		}
 		OrigSciWndProc = 0;
@@ -61,7 +61,7 @@ public:
 
 	LRESULT execute(UINT Msg, WPARAM wParam=0, LPARAM lParam=0) const
 	{
-		return SciFunc(SciPtr, Msg, wParam, lParam);
+		return SciFunc(SciPtr, static_cast<int>(Msg), static_cast<int>(wParam), static_cast<int>(lParam));
 	};
 
 	LRESULT CALLBACK CallScintillaWndProc( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
@@ -71,8 +71,8 @@ public:
 
 private:
 	LRESULT (WINAPI *SciCallWndProc) (WNDPROC,HWND,UINT,WPARAM,LPARAM);
-	SciFnDirect SciFunc;
-	sptr_t SciPtr;
+	int (* SciFunc) (void*, int, int, int);
+	void * SciPtr;
 	WNDPROC OrigSciWndProc;
 
 	void SubclassScintillaWndProc( WNDPROC NewWndProc )
@@ -80,12 +80,12 @@ private:
 		if ( ::IsWindowUnicode( hWnd ) )
 		{
 			SciCallWndProc = CallWindowProcW;
-			OrigSciWndProc = (WNDPROC) SetWindowLongPtrW( hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(NewWndProc) );
+			OrigSciWndProc = (WNDPROC) SetWindowLongPtrW( hWnd, GWLP_WNDPROC, (LONG_PTR) NewWndProc );
 		}
 		else
 		{
 			SciCallWndProc = CallWindowProcA;
-			OrigSciWndProc = (WNDPROC) SetWindowLongPtrA( hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(NewWndProc) );
+			OrigSciWndProc = (WNDPROC) SetWindowLongPtrA( hWnd, GWLP_WNDPROC, (LONG_PTR) NewWndProc );
 		}
 	}
 };

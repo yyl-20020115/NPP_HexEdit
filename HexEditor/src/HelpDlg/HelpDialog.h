@@ -30,33 +30,34 @@ class HelpDlg : public StaticDialog
 {
 
 public:
-	HelpDlg() : StaticDialog() {};
-
-	void init(HINSTANCE hInst, NppData nppData)
+	HelpDlg() : StaticDialog(),_HSource(),_nppData() {};
+    
+    void init(HINSTANCE hInst, NppData nppData)
 	{
 		_nppData = nppData;
 		Window::init(hInst, nppData._nppHandle);
 	};
 
-	void doDialog();
+   	void doDialog();
 
-	virtual void destroy() override {
-		_emailLink.destroy();
-		_urlNppPlugins.destroy();
-	};
+    virtual void destroy() {
+      _emailLink.destroy();
+		  _urlAltHexDigits.destroy();
+    };
 
 
-protected:
-	virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+protected :
+	virtual BOOL CALLBACK run_dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
 	/* Handles */
-	NppData			_nppData{};
-	HWND			_HSource = nullptr;
-
+	NppData			_nppData;
+  HWND			_HSource;
+	
 	/* for eMail */
-	URLCtrl			_emailLink;
+  URLCtrl			_emailLink;
 	URLCtrl			_urlNppPlugins;
+  URLCtrl			_urlAltHexDigits;
 };
 
 

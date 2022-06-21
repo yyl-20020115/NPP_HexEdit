@@ -23,9 +23,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "Window.h"
 #include "Hex.h"
 #include <vector>
+using namespace std;
 
 
-typedef enum class eCodingType
+typedef enum
 {
 	HEX_CODE_HEX = 0,
 	HEX_CODE_ASCI,
@@ -33,7 +34,7 @@ typedef enum class eCodingType
 	HEX_CODE_MAX
 } eCodingType;
 
-const TCHAR strCode[eCodingType::HEX_CODE_MAX][16] =
+const TCHAR strCode[HEX_CODE_MAX][16] =
 {
 	_T("Hexadecimal"),
 	_T("ANSI String"),
@@ -41,19 +42,19 @@ const TCHAR strCode[eCodingType::HEX_CODE_MAX][16] =
 };
 
 #if(WINVER <= 0x0400)
-struct COMBOBOXINFO
+struct COMBOBOXINFO 
 {
-	int cbSize;
-	RECT rcItem;
-	RECT rcButton;
-	DWORD stateButton;
-	HWND hwndCombo;
-	HWND hwndItem;
-	HWND hwndList;
+    int cbSize;
+    RECT rcItem;
+    RECT rcButton;
+    DWORD stateButton;
+    HWND hwndCombo;
+    HWND hwndItem;
+    HWND hwndList; 
 };
 #endif 
 
-typedef enum class eNppCP
+typedef enum
 {
 	NPP_CP_ASCI = 0,
 	NPP_CP_UTF8,
@@ -61,9 +62,16 @@ typedef enum class eNppCP
 	NPP_CP_USCBE
 } eNppCP;
 
-typedef struct {
-	tComboInfo	comboInfo;
-	eNppCoding	codePage;
+typedef union {
+	struct {
+		tComboInfo	comboInfo;
+		eNppCoding	codePage;
+	};
+	struct {
+		int 		length;
+		WCHAR		text[COMBO_STR_MAX+1];
+		eNppCoding	codePage;
+	};
 } tEncComboInfo;
 
 
@@ -72,9 +80,9 @@ typedef struct {
 
 class MultiTypeCombo : public Window
 {
-public:
+public :
 	MultiTypeCombo();
-	~MultiTypeCombo() {};
+    ~MultiTypeCombo () {};
 	virtual void init(HWND hNpp, HWND hCombo);
 	virtual void destroy() {
 		DestroyWindow(_hSelf);
@@ -85,23 +93,25 @@ public:
 	void getText(tComboInfo* info);
 	eCodingType setCodingType(eCodingType code);
 	void setDocCodePage(eNppCoding codepage);
+	void convertBaseCoding(void);
 
 private:
+	void changeCoding(void);
 	BOOL setComboText(tComboInfo info, UINT message = CB_ADDSTRING);
 	BOOL setComboText(tEncComboInfo info, UINT message = CB_ADDSTRING);
-	void getComboText(CHAR* str);
+	void getComboText(char* str);
 	void selectComboText(tEncComboInfo info);
 	void decode(tComboInfo* info, eCodingType type);
 	void encode(tComboInfo* info, eCodingType type);
 	void encode(tEncComboInfo* info, eCodingType type);
 
-private:
+private :
 	HWND					_hNpp;
 	HWND					_hCombo;
-	WNDPROC					_hDefaultComboProc;
+    WNDPROC					_hDefaultComboProc;
 
 	tComboInfo				_currData;
-	std::vector<tEncComboInfo>	_comboItems;
+	vector<tEncComboInfo>	_comboItems;
 	eCodingType				_currDataType;
 
 	eNppCoding				_docCodePage;

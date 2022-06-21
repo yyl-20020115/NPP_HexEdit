@@ -28,25 +28,26 @@ class GotoDlg : public StaticDialog
 {
 
 public:
-	GotoDlg() : StaticDialog() {};
-
-	void init(HINSTANCE hInst, NppData nppData, LPTSTR iniFilePath)
+	GotoDlg() : StaticDialog(), _isOff(FALSE),_HSource(),_hDefaultEditProc(),
+		_hLineEdit(),_iniFilePath(),_isHex(),_nppData(),_hParentHandle() {};
+    
+    void init(HINSTANCE hInst, NppData nppData, LPTSTR iniFilePath)
 	{
 		_nppData = nppData;
 		_iniFilePath = iniFilePath;
 		Window::init(hInst, nppData._nppHandle);
 	};
 
-	void doDialog(HWND hParent);
+   	void doDialog(HWND hParent);
 
-	virtual void destroy() override {};
+    virtual void destroy() {};
 
 
-protected:
-	virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+protected :
+	virtual BOOL CALLBACK run_dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	void calcAddress(void);
-	void UpdateDialog(void);
+    void UpdateDialog(void);
 
 	/* Subclassing list */
 	LRESULT runProcEdit(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
@@ -57,17 +58,17 @@ protected:
 
 private:
 	/* Handles */
-	NppData			_nppData{};
-	HWND			_HSource = nullptr;
-	HWND			_hParentHandle = nullptr;
+	NppData			_nppData;
+    HWND			_HSource;
+	HWND			_hParentHandle;
 
-	HWND			_hLineEdit = nullptr;
-	WNDPROC			_hDefaultEditProc = nullptr;
+	HWND			_hLineEdit;
+	WNDPROC			_hDefaultEditProc;
 
-	LPTSTR			_iniFilePath = nullptr;
+	LPTSTR			_iniFilePath;
 
-	BOOL			_isHex = FALSE;
-	BOOL			_isOff = FALSE;
+	BOOL			_isHex;
+	BOOL			_isOff;
 };
 
 

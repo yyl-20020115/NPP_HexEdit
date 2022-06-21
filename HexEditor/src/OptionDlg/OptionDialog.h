@@ -22,6 +22,14 @@
 #include "Hex.h"
 #include "HexResource.h"
 #include "ColorCombo.h"
+#include <vector>
+#include <string>
+
+using namespace std;
+
+#ifdef UNICODE
+#define string wstring
+#endif
 
 
 
@@ -29,22 +37,21 @@ class OptionDlg : public StaticDialog
 {
 
 public:
-	OptionDlg() : StaticDialog()
-	{};
-
-	void init(HINSTANCE hInst, NppData nppData)
+	OptionDlg() : StaticDialog(),_HSource(),_nppData(),_pProp() {};
+    
+    void init(HINSTANCE hInst, NppData nppData)
 	{
 		_nppData = nppData;
 		Window::init(hInst, nppData._nppHandle);
 	};
 
-	UINT doDialog(tProp *prop);
+   	UINT doDialog(tProp *prop);
 
-	virtual void destroy() override {};
+    virtual void destroy() {};
 
 
-protected:
-	INT_PTR CALLBACK run_dlgProc(UINT Message, WPARAM wParam, LPARAM lParam) override;
+protected :
+	BOOL CALLBACK run_dlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
 	void TabUpdate(void);
 	void SetParams(void);
@@ -53,7 +60,7 @@ protected:
 private:
 	/* Handles */
 	NppData			_nppData;
-	HWND			_HSource = nullptr;
+    HWND			_HSource;
 
 	ColorCombo		_ColCmbRegTxt;
 	ColorCombo		_ColCmbRegBk;
@@ -65,7 +72,7 @@ private:
 	ColorCombo		_ColCmbBkMkBk;
 	ColorCombo		_ColCmbCurLine;
 
-	tProp*			_pProp = nullptr;
+	tProp*			_pProp;
 };
 
 

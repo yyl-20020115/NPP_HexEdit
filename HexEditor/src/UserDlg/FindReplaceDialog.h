@@ -44,21 +44,20 @@ class FindReplaceDlg : public StaticDialog
 {
 
 public:
-	FindReplaceDlg() : StaticDialog()
-		, _hSCI(nullptr)
-		, _findReplace(FALSE)
-		, _whichDirection(DIR_DOWN)
-		, _isMatchCase(FALSE)
-		, _isWrap(TRUE)
-		, _isInSel(FALSE)
-		, _nppBaseCode(eNppCoding::HEX_CODE_NPP_ASCI)
-		, _currDataType(eCodingType::HEX_CODE_ASCI)
-		, _pFindCombo(nullptr)
-		, _pReplaceCombo(nullptr)
-		, _transFuncAddr(nullptr)
-	{};
-
-	void init(HINSTANCE hInst, NppData nppData)
+	FindReplaceDlg() : StaticDialog(),
+		_transFuncAddr(NULL),_currDataType(),_find(),
+		_hDefaultComboProc(), _hParentHandle(), _nppBaseCode(),
+		_nppData(),_pFindCombo(),_pReplaceCombo(),_replace()
+	{
+		_findReplace	= FALSE;
+		_whichDirection	= DIR_DOWN;
+		_isMatchCase	= FALSE;
+		_isWrap			= TRUE;
+		_isInSel		= FALSE;
+		_hSCI			= NULL;
+	};
+    
+    void init(HINSTANCE hInst, NppData nppData)
 	{
 		_nppData = nppData;
 		Window::init(hInst, nppData._nppHandle);
@@ -66,7 +65,7 @@ public:
 
 	void display(bool toShow = true);
 
-	void doDialog(HWND hParent, BOOL findReplace);
+   	void doDialog(HWND hParent, BOOL findReplace);
 	void findNext(HWND hParent, BOOL isVolatile = FALSE);
 	void findPrev(HWND hParent, BOOL isVolatile = FALSE);
 	BOOL isFindReplace(void)
@@ -74,33 +73,34 @@ public:
 		return _findReplace;
 	};
 
-	virtual void destroy() override {
-	};
+    virtual void destroy() {
+    };
 
 
-protected:
-	virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+protected :
+	virtual BOOL CALLBACK run_dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 private:
-	void initDialog(void);
+    void initDialog(void);
 	void updateDialog(void);
 	void onFind(BOOL isVolatile);
 	void onReplace(void);
 	void changeCoding(void);
 	void getSelText(tComboInfo* info);
 	void processAll(UINT process);
+	BOOL processFindReplace(BOOL find = TRUE);
 
 	BOOL isChecked(int id) const {
-		return ((BST_CHECKED == ::SendMessage(::GetDlgItem(_hSelf, id), BM_GETCHECK, 0, 0)) ? TRUE : FALSE);
+		return ((BST_CHECKED == ::SendMessage(::GetDlgItem(_hSelf, id), BM_GETCHECK, 0, 0))?TRUE:FALSE);
 	};
 
 	int getDisplayPos() const {
 		if (isChecked(IDC_RADIO_TOP))
-			return static_cast<int>(eLineVis::HEX_LINE_FIRST);
+			return HEX_LINE_FIRST;
 		else if (isChecked(IDC_RADIO_MIDDLE))
-			return static_cast<int>(eLineVis::HEX_LINE_MIDDLE);
+			return HEX_LINE_MIDDLE;
 		else //IDC_RADIO_BOTTOM
-			return static_cast<int>(eLineVis::HEX_LINE_LAST);
+			return HEX_LINE_LAST;
 	};
 
 	/* set transparency */
@@ -108,15 +108,15 @@ private:
 	{
 		if (::SendDlgItemMessage(_hSelf, IDC_CHECK_TRANSPARENT, BM_GETCHECK, 0, 0) == BST_CHECKED)
 		{
-			INT percentage = (INT)::SendDlgItemMessage(_hSelf, IDC_SLIDER_PERCENTAGE, TBM_GETPOS, 0, 0);
+			INT percent = (INT)::SendDlgItemMessage(_hSelf, IDC_SLIDER_PERCENTAGE, TBM_GETPOS, 0, 0);
 			::SetWindowLongPtr(_hSelf, GWL_EXSTYLE, ::GetWindowLong(_hSelf, GWL_EXSTYLE) | /*WS_EX_LAYERED*/0x00080000);
-			_transFuncAddr(_hSelf, 0, percentage, 0x00000002);
+			_transFuncAddr(_hSelf, 0, percent, 0x00000002);
 			::ShowWindow(::GetDlgItem(_hSelf, IDC_SLIDER_PERCENTAGE), SW_SHOW);
 
 		}
 		else
 		{
-			::SetWindowLongPtr(_hSelf, GWL_EXSTYLE, ::GetWindowLong(_hSelf, GWL_EXSTYLE) & ~/*WS_EX_LAYERED*/0x00080000);
+			::SetWindowLongPtr(_hSelf, GWL_EXSTYLE,  ::GetWindowLong(_hSelf, GWL_EXSTYLE) & ~/*WS_EX_LAYERED*/0x00080000);
 			::ShowWindow(::GetDlgItem(_hSelf, IDC_SLIDER_PERCENTAGE), SW_HIDE);
 		}
 	};
@@ -129,7 +129,7 @@ private:
 	/* Handles */
 	NppData				_nppData;
 	HWND				_hParentHandle;
-	HWND				_hSCI;
+    HWND				_hSCI;
 
 	BOOL				_findReplace;
 	BOOL				_whichDirection;
@@ -138,7 +138,7 @@ private:
 	BOOL				_isInSel;
 
 	/* for coding type */
-	eNppCoding			_nppBaseCode;
+	eNppCoding			_nppBaseCode;			
 	eCodingType			_currDataType;
 
 	tComboInfo			_find;

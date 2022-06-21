@@ -29,35 +29,30 @@ class CompareDlg : public StaticDialog
 {
 
 public:
-	CompareDlg() : StaticDialog()
-		, _pHexEdit1(nullptr)
-		, _pHexEdit2(nullptr)
-		, _currentSC(MAIN_VIEW)
-		, _rcEdit1()
-		, _rcEdit2()
-	{};
-
-	void init(HINSTANCE hInst, NppData nppData)
+	CompareDlg() : StaticDialog(),_currentSC(),_isUpDown(),_nppData(),_pHexEdit1(),_pHexEdit2(),_rcEdit1(),_rcEdit2() {};
+    
+    void init(HINSTANCE hInst, NppData nppData)
 	{
 		_nppData = nppData;
 		Window::init(hInst, nppData._nppHandle);
 	};
 
-	UINT doDialog(HexEdit *pHexEdit1, HexEdit *pHexEdit2, UINT currentSC);
+   	UINT doDialog(HexEdit *pHexEdit1, HexEdit *pHexEdit2, UINT currentSC);
 
-	virtual void destroy() override {};
+    virtual void destroy() {};
 
-protected:
-	virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+protected :
+	virtual BOOL CALLBACK run_dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	NppData			_nppData;
-	HexEdit*		_pHexEdit1 = nullptr;
-	HexEdit*		_pHexEdit2 = nullptr;
+	HexEdit*		_pHexEdit1;
+	HexEdit*		_pHexEdit2;
 
 	/* Get client orientation */
 	RECT			_rcEdit1;
 	RECT			_rcEdit2;
-	UINT			_currentSC = 0;
+	BOOL			_isUpDown;
+	UINT			_currentSC;
 };
 
 

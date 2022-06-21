@@ -1,5 +1,6 @@
 //this file is part of Function List Plugin for Notepad++
 //Copyright (C)2006 Jens Lorenz <jens.plugin.npp@gmx.de>
+//Copyright (C)2015 MacKenzie Cumings <mackenzie.cumings@gmail.com>
 //
 //This program is free software; you can redistribute it and/or
 //modify it under the terms of the GNU General Public License
@@ -23,60 +24,58 @@ UINT ColumnDlg::doDialogColumn(UINT column)
 {
 	_isColumn = TRUE;
 	_column = column;
-	return (UINT)::DialogBoxParam(_hInst, MAKEINTRESOURCE(IDD_COLUMN_DLG), _hParent, (DLGPROC)dlgProc, (LPARAM)this);
+	return (UINT)::DialogBoxParam(_hInst, MAKEINTRESOURCE(IDD_COLUMN_DLG), _hParent,  (DLGPROC)dlgProc, (LPARAM)this);
 }
 
 UINT ColumnDlg::doDialogAddWidth(UINT width)
 {
 	_isColumn = FALSE;
 	_width = width;
-	return (UINT)::DialogBoxParam(_hInst, MAKEINTRESOURCE(IDD_COLUMN_DLG), _hParent, (DLGPROC)dlgProc, (LPARAM)this);
+	return (UINT)::DialogBoxParam(_hInst, MAKEINTRESOURCE(IDD_COLUMN_DLG), _hParent,  (DLGPROC)dlgProc, (LPARAM)this);
 }
 
 
-INT_PTR CALLBACK ColumnDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM)
+BOOL CALLBACK ColumnDlg::run_dlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
 	TCHAR	text[16];
 
-	switch (Message)
+	switch (Message) 
 	{
-	case WM_INITDIALOG:
-	{
-		goToCenter();
-
-		if (_isColumn == TRUE) {
-			::SetWindowText(::GetDlgItem(_hSelf, IDC_COLUMN_EDIT), _itot(_column, text, 10));
-			NLChangeDialog(_hInst, _nppData._nppHandle, _hSelf, _T("ColumnCount"));
-		}
-		else {
-			::SetWindowText(::GetDlgItem(_hSelf, IDC_COLUMN_EDIT), _itot(_width, text, 10));
-			::SetWindowText(_hSelf, _T("Address Width"));
-			NLChangeDialog(_hInst, _nppData._nppHandle, _hSelf, _T("AddressWidth"));
-		}
-		break;
-	}
-	case WM_COMMAND:
-	{
-		switch (wParam)
+		case WM_INITDIALOG:
 		{
-		case IDCANCEL:
+			goToCenter();
+
 			if (_isColumn == TRUE) {
-				::EndDialog(_hSelf, _column);
+				::SetWindowText(::GetDlgItem(_hSelf, IDC_COLUMN_EDIT), _itot(_column, text, 10));
+				NLChangeDialog(_hInst, _nppData._nppHandle, _hSelf, _T("ColumnCount"));
+			} else {
+				::SetWindowText(::GetDlgItem(_hSelf, IDC_COLUMN_EDIT), _itot(_width, text, 10));
+				::SetWindowText(_hSelf, _T("Address Width"));
+				NLChangeDialog(_hInst, _nppData._nppHandle, _hSelf, _T("AddressWidth"));
 			}
-			else {
-				::EndDialog(_hSelf, _width);
-			}
-			return TRUE;
-		case IDOK:
-			::GetWindowText(::GetDlgItem(_hSelf, IDC_COLUMN_EDIT), text, 16);
-			::EndDialog(_hSelf, _ttoi(text));
-			return TRUE;
-		default:
-			return FALSE;
+			break;
 		}
-	}
-	default:
-		break;
+		case WM_COMMAND : 
+		{
+			switch (wParam)
+			{
+				case IDCANCEL:
+					if (_isColumn == TRUE) {
+						::EndDialog(_hSelf, _column);
+					} else {
+						::EndDialog(_hSelf, _width);
+					}
+					return TRUE;
+				case IDOK:
+					::GetWindowText(::GetDlgItem(_hSelf, IDC_COLUMN_EDIT), text, 16);
+					::EndDialog(_hSelf, _ttoi(text));
+					return TRUE;
+				default:
+					return FALSE;
+			}
+		}
+		default:
+			break;
 	}
 	return FALSE;
 }

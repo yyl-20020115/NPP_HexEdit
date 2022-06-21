@@ -29,10 +29,10 @@ class PatternDlg : public StaticDialog
 {
 
 public:
-	PatternDlg() : StaticDialog()
-	{};
-
-	void init(HINSTANCE hInst, NppData nppData)
+	PatternDlg() : StaticDialog(),_hDefaultEditProc(),_hParentHandle(),
+		_isReplace(),_nppData(),_pCombo(),_pattern(),_txtCaption() {};
+    
+    void init(HINSTANCE hInst, NppData nppData)
 	{
 		_nppData = nppData;
 		Window::init(hInst, nppData._nppHandle);
@@ -41,32 +41,38 @@ public:
 	void patternReplace(HWND hHexEdit);
 	void insertColumns(HWND hHexEdit);
 
-	virtual void destroy() {
+    virtual void destroy() {
 		/* deregister this dialog */
 		display(false);
 		::SendMessage(_hParent, NPPM_MODELESSDIALOG, MODELESSDIALOGREMOVE, (LPARAM)_hSelf);
 	};
 
 
-protected:
-	virtual INT_PTR CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam);
+protected :
+	virtual BOOL CALLBACK run_dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-	void doDialog(HWND hHexEdit);
+   	void doDialog(HWND hHexEdit);
 	BOOL onInsert(void);
 	BOOL onReplace(void);
+
+	/* Subclassing list */
+	LRESULT runProcEdit(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK wndEditProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+		return (((PatternDlg *)(::GetWindowLongPtr(hwnd, GWLP_USERDATA)))->runProcEdit(hwnd, Message, wParam, lParam));
+	};
 
 
 private:
 	/* Handles */
 	NppData				_nppData;
-	HWND				_hParentHandle = nullptr;
-	WNDPROC				_hDefaultEditProc = nullptr;
+	HWND				_hParentHandle;
+	WNDPROC				_hDefaultEditProc;
 
-	tComboInfo			_pattern{};
-	MultiTypeCombo*		_pCombo = nullptr;
+	tComboInfo			_pattern;
+	MultiTypeCombo*		_pCombo;
 
-	BOOL				_isReplace = FALSE;
-	TCHAR				_txtCaption[64]{};
+	BOOL				_isReplace;
+	TCHAR				_txtCaption[64];
 };
 
 

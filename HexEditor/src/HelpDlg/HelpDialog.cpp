@@ -21,44 +21,47 @@
 
 void HelpDlg::doDialog()
 {
-	if (!isCreated())
-		create(IDD_HELP_DLG);
+  if ( !isCreated() )
+    create(IDD_HELP_DLG);
 
 	goToCenter();
 }
 
 
-INT_PTR CALLBACK HelpDlg::run_dlgProc(UINT Message, WPARAM wParam, LPARAM)
+BOOL CALLBACK HelpDlg::run_dlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 {
-	switch (Message)
+	switch (Message) 
 	{
-	case WM_INITDIALOG:
-	{
-		_emailLink.init(_hInst, _hSelf);
-		_emailLink.create(::GetDlgItem(_hSelf, IDC_EMAIL_LINK), _T("mailto:jens.plugin.npp@gmx.de"));
-
-		_urlNppPlugins.init(_hInst, _hSelf);
-		_urlNppPlugins.create(::GetDlgItem(_hSelf, IDC_NPP_PLUGINS_URL), _T("http://sourceforge.net/projects/npp-plugins/"));
-
-		/* change language */
-		NLChangeDialog(_hInst, _nppData._nppHandle, _hSelf, _T("Help"));
-
-		return TRUE;
-	}
-	case WM_COMMAND:
-	{
-		switch (wParam)
+    case WM_INITDIALOG :
 		{
-		case IDOK:
-		case IDCANCEL:
-			display(FALSE);
-			return TRUE;
+      _emailLink.init(_hInst, _hSelf);
+      _emailLink.create(::GetDlgItem(_hSelf, IDC_EMAIL_LINK), _T("mailto:mackenzie.cumings@gmail.com"));
 
-		default:
+      _urlNppPlugins.init(_hInst, _hSelf);
+      _urlNppPlugins.create(::GetDlgItem(_hSelf, IDC_NPP_PLUGINS_URL), _T("https://github.com/mackwai/NPPHexEditor"));
+
+      _urlAltHexDigits.init(_hInst, _hSelf);
+      _urlAltHexDigits.create(::GetDlgItem(_hSelf, IDC_STATIC_THX), _T("http://mackwai.blogspot.com/2015/06/alternative-hexadecimal-digits-version-2.html"));
+
+			/* change language */
+			NLChangeDialog(_hInst, _nppData._nppHandle, _hSelf, _T("Help"));
+
+			return TRUE;
+		}
+		case WM_COMMAND : 
+		{
+			switch (wParam)
+			{
+				case IDOK :
+				case IDCANCEL :
+					display(FALSE);
+					return TRUE;
+
+				default :
+					break;
+			}
 			break;
 		}
-		break;
-	}
 	}
 	return FALSE;
 }
