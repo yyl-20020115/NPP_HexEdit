@@ -46,11 +46,11 @@ struct ShortcutKey {
 };
 
 struct FuncItem {
-	TCHAR _itemName[nbChar];
-	PFUNCPLUGINCMD _pFunc;
-	int _cmdID;
-	bool _init2Check;
-	ShortcutKey *_pShKey;
+	TCHAR _itemName[nbChar] = { 0 };
+	PFUNCPLUGINCMD _pFunc = 0;
+	int _cmdID = 0;
+	bool _init2Check = false;
+	ShortcutKey *_pShKey = nullptr;
 };
 
 typedef FuncItem * (__cdecl * PFUNCGETFUNCSARRAY)(int *);

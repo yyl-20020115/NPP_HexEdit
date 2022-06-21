@@ -1,23 +1,5 @@
-﻿  ColorCombo.cpp
-  ColorPopup.cpp
-  ColumnDialog.cpp
-  CompareDialog.cpp
-  FindReplaceDialog.cpp
-  GotoDialog.cpp
-  HEXDialog.cpp
-  HelpDialog.cpp
-  Hex.cpp
-  ModifyMenu.cpp
-  MultiTypeCombo.cpp
-  OptionDialog.cpp
-  PatternDialog.cpp
-  ToolTip.cpp
-  URLCtrl.cpp
-  Utf8_16.cpp
-  正在生成代码...
-  StaticDialog.cpp
-  SysMsg.cpp
-  stdafx.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1371,5): warning MSB8012: TargetPath(C:\Working\NPP_HexEdit\HexEditor\projects\2003\x64\Debug\HexEditor.dll) 与 Linker 的 OutputFile 属性值(C:\Program Files (x86)\Notepad++\Plugins\HexEditor.dll)不匹配。这可能导致项目生成不正确。若要更正此问题，请确保 $(OutDir)、$(TargetName) 和 $(TargetExt) 属性值与 %(Link.OutputFile) 中指定的值匹配。
-    正在创建库 C:\Working\NPP_HexEdit\HexEditor\projects\2003\x64\Debug\HexEditor.lib 和对象 C:\Working\NPP_HexEdit\HexEditor\projects\2003\x64\Debug\HexEditor.exp
-  HexEditor.vcxproj -> C:\Working\NPP_HexEdit\HexEditor\projects\2003\x64\Debug\HexEditor.dll
+﻿  StaticDialog.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1371,5): warning MSB8012: TargetPath(C:\Working\NPP_HexEdit\HexEditor\projects\2022\x64\Debug\HexEditor.dll) 与 Linker 的 OutputFile 属性值(C:\Working\NPP_HexEdit\HexEditor\projects\2022\HexEditor.dll)不匹配。这可能导致项目生成不正确。若要更正此问题，请确保 $(OutDir)、$(TargetName) 和 $(TargetExt) 属性值与 %(Link.OutputFile) 中指定的值匹配。
+  LINK : 没有找到 HexEditor.dll 或上一个增量链接没有生成它；正在执行完全链接
+    正在创建库 C:\Working\NPP_HexEdit\HexEditor\projects\2022\x64\Debug\HexEditor.lib 和对象 C:\Working\NPP_HexEdit\HexEditor\projects\2022\x64\Debug\HexEditor.exp
+  HexEditor.vcxproj -> C:\Working\NPP_HexEdit\HexEditor\projects\2022\x64\Debug\HexEditor.dll

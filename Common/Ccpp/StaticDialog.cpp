@@ -114,7 +114,7 @@ void StaticDialog::create(int dialogID, bool isRTL, bool isModeless)
 		systemMessage(_T("StaticDialog"));
 		throw int(666);
 	}
-
+	SetWindowLongPtr(_hSelf, GWLP_USERDATA, (LONG_PTR)this);
 	if (isModeless) {
 		_isModeles = isModeless;
 		::SendMessage(_hParent, NPPM_MODELESSDIALOG, MODELESSDIALOGADD, (WPARAM)_hSelf);
@@ -138,6 +138,7 @@ BOOL CALLBACK StaticDialog::dlgProc(HWND hwnd, UINT message, WPARAM wParam, LPAR
 
 		default :
 		{
+			return FALSE;
 			StaticDialog *pStaticDlg = reinterpret_cast<StaticDialog *>(::GetWindowLongPtr(hwnd, GWLP_USERDATA));
 			if (!pStaticDlg)
 				return FALSE;
